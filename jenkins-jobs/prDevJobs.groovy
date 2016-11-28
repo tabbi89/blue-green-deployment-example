@@ -7,21 +7,21 @@ folder(basePath) {
 
 job("$basePath/PRDev") {
     label "digital-slave"
-
     scm {
         git {
             remote {
                 github repo
                 refspec '+refs/pull/*:refs/remotes/origin/pr/*'
             }
-            branch '${sha1}'
+            branch('${sha1}')
         }
     }
     triggers {
         githubPullRequest {
             admin 'tabbi89'
-            triggerPhrase 'OK to test'
-            onlyTriggerPhrase true
+            triggerPhrase('OK to test')
+            useGitHubHooks()
+            cron('* * * * *')
         }
     }
     steps {
