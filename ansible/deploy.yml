@@ -26,6 +26,7 @@
 
     - name: Stop server
       command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:stop {{ ansible_default_ipv4.address }}:80
+      ignore_errors: true
 
     - name: Start server
       command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:start --force {{ ansible_default_ipv4.address }}:80 -d web/
