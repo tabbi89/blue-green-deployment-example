@@ -5,14 +5,15 @@ folder(basePath) {
 }
 
 pipelineJob("$basePath/DeployDev") {
+    using "$basePath/DeployDev"
+    parameters {
+        stringParam('BRANCH', 'master')
+    }
+
     definition {
         cps {
             sandbox()
             script("""
-                parameters {
-                    stringParam('BRANCH', 'master')
-                }
-
                 node('digital-slave') {
                     git url: 'https://github.com/tabbi89/blue-green-deployment-example', branch: "$BRANCH"
 
