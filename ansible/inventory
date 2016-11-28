@@ -1,0 +1,8 @@
+[jenkins-master]
+jenkins-master
+
+[jenkins-slave]
+jenkins-slave
+
+[dev]
+dev01

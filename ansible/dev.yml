@@ -1,0 +1,32 @@
+---
+- hosts: dev01
+
+  vars:
+    go_tarball: "go1.7.3.linux-amd64.tar.gz"
+    go_tarball_checksum: "sha256:508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e"
+    go_version_target: "go version go1.7.3 linux/amd64"
+    package_version: v0.12.3
+
+  roles:
+    - joshualund.golang
+
+  tasks:
+    - name: Create user
+      user: name=jenkins comment="Jenkins"
+
+    - name: Create go directory
+      file: path=/home/jenkins/go owner=jenkins group=jenkins state=directory
+
+    - name: Create ssh directory
+      file: path=/home/jenkins/.ssh owner=jenkins group=jenkins state=directory
+
+    - name: Move keys
+      copy: remote_src=True src=/root/.ssh/authorized_keys dest=/home/jenkins/.ssh/authorized_keys owner=jenkins group=jenkins
+
+    - name: Add glide
+      apt_repository: repo='ppa:masterminds/glide' state=present
+
+    - name: Update repositories cache and install "glide" package
+      apt:
+        name: glide
+        update_cache: yes

@@ -1,0 +1,7 @@
+---
+- stat: path=/etc/php7.0/cli/php.ini
+  register: phpcli
+
+- include: php-cli.yml
+  when: phpcli.stat.exists
+

@@ -1,0 +1,83 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    digital_jenkins_tag_slave: "jenkins-slave"
+    digital_jenkins_tag_main: "jenkins"
+    digital_api_token: "d2db2e50d23937890ac3c82b351a3d5dddcfe6f1c9b1068aa3df427a9ea82755"
+
+  tasks:
+    - name: Remove jenkins slave droplet
+      uri:
+        url: https://api.digitalocean.com/v2/droplets?tag_name={{ digital_jenkins_tag_slave }}
+        method: DELETE
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 204, 404, 422
+
+    - name: Create jenkins slave droplet
+      uri:
+        url: https://api.digitalocean.com/v2/droplets
+        method: POST
+        body:
+            name: "jenkinsSlave"
+            region: "fra1"
+            size: "512mb"
+            image: "ubuntu-16-04-x64"
+            ssh_keys:
+              - "32:c2:8b:14:4b:16:f7:36:8b:4d:10:0e:41:07:66:1a"
+            backups: false
+            ipv6: true
+            user_data: null
+            private_networking: null
+            volumes: null
+            tags:
+              - "{{ digital_jenkins_tag_main }}"
+              - "{{ digital_jenkins_tag_slave }}"
+        body_format: json
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 202
+      register: droplet
+
+    - debug: msg="Droplet was created with id {{ droplet['json']['droplet']['id'] }}"
+
+    - name: Get jenkins slave droplet network
+      uri:
+        url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['droplet']['id'] }}
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200, 404
+      register: droplet_data
+      until: droplet_data.status == 200
+      retries: 12
+      delay: 5
+
+    - name: Get jenkins slave droplet status
+      uri:
+        url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['droplet']['id'] }}
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet_data
+      until: droplet_data['json']['droplet']['status'] == "active"
+      retries: 12
+      delay: 5
+
+    - debug: msg="Droplet IP {{ droplet_data['json']['droplet']['networks']['v4'][0]['ip_address'] }}"
+
+    - name: Insert "Jenkins-Slave" ssh config to configuation block in ~/.ssh/config
+      blockinfile:
+        dest: ~/.ssh/config
+        block: |
+          Host jenkins-slave
+             User root
+             IdentityFile ~/.ssh/id_rsa_digital
+             Hostname {{ droplet_data['json']['droplet']['networks']['v4'][0]['ip_address'] }}
+        marker: "# {mark} Jenkins-Slave"
+
+    - name: Time to finish
+      pause: seconds=10

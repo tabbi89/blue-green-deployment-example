@@ -1,0 +1,5 @@
+---
+- include: jenkins-slave.yml
+- include: pre-setup.yml variable_host=jenkins-slave
+- include: jenkins-slave-provision.yml
+- include: jenkins-slave-snapshot.yml

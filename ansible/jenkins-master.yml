@@ -1,0 +1,66 @@
+---
+- hosts: jenkins-master
+
+  vars:
+    docker_apt_state: "latest"
+
+  tasks:
+    - name: Docker | Install recommended packages
+      apt: name={{ item }} state=latest
+      with_items:
+        - linux-image-extra-{{ ansible_kernel }}
+        - linux-image-extra-virtual
+
+    - name: Docker | Install ppa key
+      apt_key: keyserver=keyserver.ubuntu.com id=2C52609D
+      # apt_key: id=2C52609D url=http://p80.pool.sks-keyservers.net/pks/lookup?op=get&search=0x58118E89F3A912897C070ADBF76221572C52609D state=present
+
+    - name: Docker | Install ppa
+      apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_lsb.codename }} main' state=present
+
+    - name: Update apt
+      apt:
+        update_cache: yes
+
+    - name: Docker | Install package
+      apt: name=docker-engine state={{ docker_apt_state }}
+
+    - name: Docker | Install docker-compose
+      apt: name=docker-compose state={{ docker_apt_state }}
+
+    - name: Docker | Clean docker jenkins tmp directory
+      file: path=/tmp/docker-jenkins state=absent
+
+    - name: Docker | Copy jenkins docker
+      synchronize: src=docker-jenkins dest=/tmp
+
+    - name: Docker | Copy jenkins docker
+      template: src=docker-jenkins/jenkins_configuration.j2 dest=/tmp/docker-jenkins/config.xml
+
+    - name: Docker | Installing docker compose
+      shell: curl -L https://github.com/docker/compose/releases/download/1.9.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+
+    - name: Docker | Set docker-compose permissions
+      file:
+        path="/usr/local/bin/docker-compose"
+        state=file
+        mode=0755
+        owner=root
+        group=docker
+
+    - name: Jenkins | Create jenkins home directory
+      file: path=/home/jenkins state=directory
+
+    - name: Jenkins | Start jenkins
+      shell: docker-compose -f /tmp/docker-jenkins/docker-compose.yml up --build -d
+
+    - name: Jenkins | Check jenkins status
+      raw: docker ps
+      register: output
+
+    - debug: var=output
+
+    - name: Jenkins | Ensure that jenkins is up and running
+      assert:
+        that:
+          - "'dockerjenkins_master_1' in output.stdout"

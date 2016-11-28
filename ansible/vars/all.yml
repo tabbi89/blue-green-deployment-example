@@ -1,0 +1,3 @@
+---
+server_timezone: UTC
+php_packages_to_install: [php7.0-cli, php7.0-mcrypt, php7.0-intl]

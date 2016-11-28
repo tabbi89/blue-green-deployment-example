@@ -1,0 +1,17 @@
+---
+- hosts: jenkins-slave
+  vars_files:
+    - vars/all.yml
+
+  roles:
+    - php
+    - geerlingguy.composer
+
+  post_tasks:
+    - name: Ensure github.com is a known host
+      lineinfile:
+        dest: /root/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+        regexp: "^github\\.com"
