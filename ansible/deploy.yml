@@ -28,6 +28,6 @@
       command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:stop {{ ansible_default_ipv4.address }}:80
 
     - name: Start server
-      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:start {{ ansible_default_ipv4.address }}:80 -d web/
+      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:start --force {{ ansible_default_ipv4.address }}:80 -d web/
 
     - debug: msg="Deployed to {{ build_folder_name }}"
