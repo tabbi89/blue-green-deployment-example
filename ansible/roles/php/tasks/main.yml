@@ -1,11 +1,11 @@
 ---
-- name: Update apt
+- name: PHP | Update apt
   apt: update_cache=yes
 
-- name: Install php7.0
+- name: PHP | Install php7.0
   apt: pkg=php7.0 state=latest
 
-- name: Install PHP Packages
+- name: PHP | Install PHP Packages
   apt: pkg={{ item }} state=latest
   with_items: "{{ php_packages_to_install }}"
 

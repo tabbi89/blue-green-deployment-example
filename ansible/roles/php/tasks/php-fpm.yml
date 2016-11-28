@@ -1,6 +1,0 @@
----
-- name: Update apt
-  apt: update_cache=yes
-
-- name: Install php7.0
-  apt: name=php7.0-fpm state=latest

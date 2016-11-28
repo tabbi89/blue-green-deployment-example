@@ -1,0 +1,8 @@
+---
+- name: Ansible | Install ppa
+  apt_repository: repo='ppa:ansible/ansible' state=present
+
+- name: Ansible | Update repositories cache and install "ansible" package
+  apt:
+    name: ansible
+    update_cache: yes

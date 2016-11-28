@@ -15,3 +15,7 @@
 /vendor/
 /web/bundles/
 /ansible/vendor/
+!/ansible/builds
+/ansible/builds/*
+!ansible/builds/.gitkeepg
+.idea/
