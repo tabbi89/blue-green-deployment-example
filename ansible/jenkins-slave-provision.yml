@@ -7,6 +7,12 @@
     - php
     - geerlingguy.composer
 
+  tasks:
+    - name: Install packages
+      apt:
+        name: {{ item }}
+      with_items: "{{ packages }}"
+
   post_tasks:
     - name: Ensure github.com is a known host
       lineinfile:
