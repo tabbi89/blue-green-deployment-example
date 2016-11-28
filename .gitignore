@@ -17,5 +17,5 @@
 /ansible/vendor/
 !/ansible/builds
 /ansible/builds/*
-!ansible/builds/.gitkeepg
+!ansible/builds/.gitkeep
 .idea/
