@@ -1,5 +1,5 @@
 ---
-- hosts: dev
+- hosts: all
 
   vars:
     name: dev.tar.gz
