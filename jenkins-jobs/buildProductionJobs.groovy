@@ -22,11 +22,11 @@ pipelineJob("$basePath/DeployProduction") {
                     }
 
                     stage("Deploy app artifact to production") {
-                        ansiblePlaybook  playbook: 'ansible/deploy.yml', inventory: 'ansible/inventory', colorized: true
+                        ansiblePlaybook  playbook: 'ansible/deploy.yml', inventory: 'ansible/inventory/production', colorized: true
                     }
 
                     stage("Run healty check") {
-                        ansiblePlaybook  playbook: 'ansible/deploy.yml', inventory: 'ansible/inventory', colorized: true
+                        ansiblePlaybook  playbook: 'ansible/health-check.yml', inventory: 'ansible/inventory/production', colorized: true
                     }
 
                     stage("Save artifact") {

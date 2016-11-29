@@ -5,8 +5,6 @@ folder(basePath) {
 }
 
 pipelineJob("$basePath/DeployDev") {
-
-
     definition {
         cps {
             sandbox()
@@ -20,7 +18,7 @@ pipelineJob("$basePath/DeployDev") {
                     }
 
                     stage("Deploy app artifact") {
-                        ansiblePlaybook  playbook: 'ansible/deploy.yml', inventory: 'ansible/inventory', colorized: true
+                        ansiblePlaybook  playbook: 'ansible/deploy.yml', inventory: 'ansible/inventory/development', colorized: true
                     }
 
                     stage("Save artifact") {

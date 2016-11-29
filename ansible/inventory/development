@@ -4,5 +4,6 @@ jenkins-master
 [jenkins-slave]
 jenkins-slave
 
-[dev]
+
+[webservers]
 dev01

@@ -1,8 +1,8 @@
 ---
-- hosts: all
+- hosts: webservers
 
   vars:
-    name: dev.tar.gz
+    name: app.tar.gz
     build_folder_name: "{{ ansible_date_time.date }}-{{ ansible_date_time.time }}"
 
   tasks:
