@@ -4,10 +4,8 @@
     - vars/all.yml
 
   roles:
-    - php
-    - geerlingguy.composer
     - server
 
   post_tasks:
     - name: Create directory for apps
-      file: path=/root/apps state=directory mode=0755
+      file: path=/jenkins/live state=directory mode=0755

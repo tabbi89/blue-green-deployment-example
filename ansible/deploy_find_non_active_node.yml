@@ -1,0 +1,48 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    digital_api_token: "d2db2e50d23937890ac3c82b351a3d5dddcfe6f1c9b1068aa3df427a9ea82755"
+    env_to_deploy: production01
+
+  tasks:
+    - name: Retrieve an existing Floating IP
+      uri:
+        url: https://api.digitalocean.com/v2/floating_ips/139.59.205.145
+        method: GET
+        body_format: json
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet
+
+    - debug: var=droplet['json']['floating_ip']['droplet']['id']
+
+    - name: Get droplet
+      uri:
+        url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['floating_ip']['droplet']['id'] }}
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet_data
+      until: droplet_data.status == 200
+
+    - debug: var=droplet_data['json']['droplet']['name']
+
+    - name: Set environment to deploy
+      set_fact:
+        env_to_deploy: production02
+      when: (droplet_data['json']['droplet']['name'] == "production01")
+
+    - debug: var=env_to_deploy
+
+    - name: Remove file
+      file: path=deploy_to.yml state=absent
+
+    - name: Create file
+      file: path=deploy_to.yml state=touch
+
+    - name: Save env to deploy
+      lineinfile: dest=deploy_to.yml line={{ env_to_deploy }} create=yes

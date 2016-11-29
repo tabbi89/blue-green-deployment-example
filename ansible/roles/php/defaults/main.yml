@@ -1,3 +1,0 @@
----
-server_timezone: UTC
-php_packages_to_install: [php7.0-cli]

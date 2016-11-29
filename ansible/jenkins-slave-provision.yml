@@ -58,8 +58,6 @@
       -----END RSA PRIVATE KEY-----
 
   roles:
-    - php
-    - geerlingguy.composer
     - server
     - ansible
 

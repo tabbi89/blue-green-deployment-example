@@ -3,7 +3,3 @@ jenkins-master
 
 [jenkins-slave]
 jenkins-slave
-
-
-[webservers]
-dev01

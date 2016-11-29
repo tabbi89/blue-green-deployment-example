@@ -1,11 +1,11 @@
-String basePath = 'weatherChecker'
+String basePath = 'what-week'
 String repo = 'tabbi89/blue-green-deployment-example'
 
 folder(basePath) {
-    description 'Pull request'
+    description 'Pull request builder'
 }
 
-job("$basePath/PRDev") {
+job("$basePath/pr-builder") {
     label "digital-slave"
     scm {
         git {
@@ -16,6 +16,7 @@ job("$basePath/PRDev") {
             branch('${sha1}')
         }
     }
+
     triggers {
             githubPullRequest {
                 admin 'tabbi89'
@@ -26,16 +27,7 @@ job("$basePath/PRDev") {
             }
     }
 
-    publishers {
-        mergeGithubPullRequest {
-            mergeComment('merged by Jenkins')
-            onlyAdminsMerge()
-            failOnNonMerge()
-            deleteOnMerge()
-        }
-    }
-
     steps {
-        shell 'composer install'
+        shell ''
     }
 }

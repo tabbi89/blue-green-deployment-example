@@ -1,0 +1,66 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    digital_api_token: "d2db2e50d23937890ac3c82b351a3d5dddcfe6f1c9b1068aa3df427a9ea82755"
+    env_to_deploy: production01
+
+  tasks:
+    - name: Retrieve an existing Floating IP
+      uri:
+        url: https://api.digitalocean.com/v2/floating_ips/139.59.205.145
+        method: GET
+        body_format: json
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet
+
+    - debug: var=droplet['json']['floating_ip']['droplet']['id']
+
+    - name: Get droplet
+      uri:
+        url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['floating_ip']['droplet']['id'] }}
+        method: GET
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet_data
+      until: droplet_data.status == 200
+
+    - debug: var=droplet_data['json']['droplet']['name']
+
+    - name: Set environment to deploy
+      set_fact:
+        env_to_deploy: production02
+      when: (droplet_data['json']['droplet']['name'] == "production01")
+
+    - debug: var=env_to_deploy
+
+    - name: List droplets by tag
+      uri:
+        url: https://api.digitalocean.com/v2/droplets?tag_name={{ env_to_deploy }}
+        method: GET
+        body_format: json
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 200
+      register: droplet_tag
+
+    - debug: msg="Droplet id {{ droplet_tag['json']['droplets'][0]['id'] }}"
+
+    - name: Assign to new env
+      uri:
+        url: https://api.digitalocean.com/v2/floating_ips/139.59.205.145/actions
+        method: POST
+        body:
+          type: "assign"
+          droplet_id: "{{ droplet_tag['json']['droplets'][0]['id'] }}"
+        body_format: json
+        HEADER_Content-Type: "application/json"
+        HEADER_Authorization: "Bearer {{ digital_api_token }}"
+        status_code: 201
+      register: droplet_ip
+
+    - debug: msg="Status {{ droplet_ip['json']['action']['status'] }}"
