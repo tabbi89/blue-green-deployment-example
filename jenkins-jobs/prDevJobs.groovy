@@ -32,14 +32,6 @@ job("$basePath/PRDev") {
                 }
             }
     }
-    publishers {
-        mergeGithubPullRequest {
-            mergeComment('merged by Jenkins')
-            onlyAdminsMerge()
-            failOnNonMerge()
-            deleteOnMerge()
-        }
-    }
 
     steps {
         shell 'composer install'
