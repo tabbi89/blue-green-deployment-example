@@ -23,14 +23,16 @@ job("$basePath/PRDev") {
                 useGitHubHooks()
                 cron('* * * * *')
                 allowMembersOfWhitelistedOrgsAsAdmin()
-                extensions {
-                    buildStatus {
-                        completedStatus('SUCCESS', 'There were no errors, go have a cup of coffee...')
-                        completedStatus('FAILURE', 'There were errors, for info, please see...')
-                        completedStatus('ERROR', 'There was an error in the infrastructure, please contact...')
-                    }
-                }
             }
+    }
+
+    publishers {
+        mergeGithubPullRequest {
+            mergeComment('merged by Jenkins')
+            onlyAdminsMerge()
+            failOnNonMerge()
+            deleteOnMerge()
+        }
     }
 
     steps {
