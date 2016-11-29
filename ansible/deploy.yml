@@ -4,8 +4,14 @@
   vars:
     name: app.tar.gz
     build_folder_name: "{{ ansible_date_time.date }}-{{ ansible_date_time.time }}"
+    console_command_env: "--env=dev"
 
   tasks:
+    - name: Check deployment inventory
+      set_fact:
+        console_command_env: "--env=prod --no-debug"
+      when: inventory_file == "ansible/inventory/production"
+
     - name: Deploy | Create
       local_action: command chdir={{ playbook_dir }}/../ tar -zcvf ansible/builds/{{ name }} app/ bin/ src/ vendor/ web/
 
@@ -22,13 +28,13 @@
       unarchive: src=builds/{{ name }} dest=/root/apps/{{ build_folder_name }}
 
     - name: Clear cache
-      command: chdir=/root/apps/{{ build_folder_name }} php bin/console cache:clear
+      command: chdir=/root/apps/{{ build_folder_name }} php bin/console cache:clear {{ console_command_env }}
 
     - name: Stop server
-      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:stop {{ ansible_default_ipv4.address }}:80
+      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:stop {{ ansible_default_ipv4.address }}:80 {{ console_command_env }}
       ignore_errors: true
 
     - name: Start server
-      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:start --force {{ ansible_default_ipv4.address }}:80 -d web/
+      command: chdir=/root/apps/{{ build_folder_name }} php bin/console server:start --force {{ ansible_default_ipv4.address }}:80 -d web/ {{ console_command_env }}
 
-    - debug: msg="Deployed to {{ build_folder_name }}"
+    - debug: msg="Deployed {{ ansible_default_ipv4.address }} to {{ build_folder_name }}"
