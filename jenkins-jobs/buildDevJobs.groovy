@@ -5,17 +5,14 @@ folder(basePath) {
 }
 
 pipelineJob("$basePath/DeployDev") {
-    using "$basePath/DeployDev"
-    parameters {
-        stringParam('BRANCH', 'master')
-    }
+
 
     definition {
         cps {
             sandbox()
             script("""
                 node('digital-slave') {
-                    git url: 'https://github.com/tabbi89/blue-green-deployment-example', branch: "$BRANCH"
+                    git url: 'https://github.com/tabbi89/blue-green-deployment-example'
 
                     stage("Install dependencies") {
                         sh "composer install"
