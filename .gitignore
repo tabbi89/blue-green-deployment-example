@@ -3,3 +3,4 @@
 /ansible/builds/*
 !ansible/builds/.gitkeep
 .idea/
+/node_modules/

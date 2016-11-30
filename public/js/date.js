@@ -1,17 +1,14 @@
-Date.prototype.getWeek = function () {
-    var target  = new Date(this.valueOf());
-    var dayNr   = (this.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNr + 3);
-    var firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() != 4) {
-        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
+function getWeek(date) {
+    var onejan = new Date(date.getFullYear(), 0, 1);
+    return Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7);
 }
 
-var d = new Date();
-
 function oddOrEven(x) {
-    return ( x & 1 ) ? "odd" : "even";
+    return (x % 2 == 0) ? "odd" : "even";
+}
+
+// :)
+if (typeof exports !== 'undefined') {
+    exports.getWeek =  getWeek;
+    exports.oddOrEven =  oddOrEven;
 }

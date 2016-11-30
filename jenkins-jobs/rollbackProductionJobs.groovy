@@ -10,7 +10,7 @@ pipelineJob("$basePath/rollback-production") {
             sandbox()
             script("""
                 node('digital-slave') {
-                    git url: 'https://github.com/tabbi89/blue-green-deployment-example', credentialsId: 'b2cad6ea-8de0-4d36-882a-87d586cfc9d0'
+                    git url: 'https://github.com/tabbi89/blue-green-deployment-example', credentialsId: 'b90a4e44-d2f0-4f22-a4f4-ed20d1ff8609'
 
                     stage("Switch back non active node to live") {
                         ansiblePlaybook  playbook: 'ansible/switch_env.yml', inventory: 'ansible/inventory/production'

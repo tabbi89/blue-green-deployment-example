@@ -13,14 +13,14 @@ pipelineJob("$basePath/deploy-to-production") {
             sandbox()
             script("""
                 node('digital-slave') {
-                    git url: 'https://github.com/tabbi89/blue-green-deployment-example', branch: 'master', credentialsId: 'b2cad6ea-8de0-4d36-882a-87d586cfc9d0'
+                    git url: 'https://github.com/tabbi89/blue-green-deployment-example', branch: 'master', credentialsId: 'b90a4e44-d2f0-4f22-a4f4-ed20d1ff8609'
 
                     stage("Install dependencies") {
-
+                        sh 'npm install'
                     }
 
                     stage("Run tests") {
-
+                        sh 'npm test'
                     }
 
                     stage("Find non active node") {

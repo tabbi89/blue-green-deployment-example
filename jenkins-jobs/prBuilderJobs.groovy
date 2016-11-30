@@ -28,6 +28,7 @@ job("$basePath/pr-builder") {
     }
 
     steps {
-        shell ''
+        shell 'npm install'
+        shell 'npm test'
     }
 }
