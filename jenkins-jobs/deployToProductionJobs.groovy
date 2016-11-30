@@ -16,7 +16,7 @@ pipelineJob("$basePath/deploy-to-production") {
                     git url: 'https://github.com/tabbi89/blue-green-deployment-example', branch: 'master'
 
                     stage("Install dependencies") {
-                        sh "ansible-galaxy install -r ansible/requirements.yml"
+
                     }
 
                     stage("Run tests") {
@@ -32,7 +32,7 @@ pipelineJob("$basePath/deploy-to-production") {
                     }
 
                     stage("Health check of non active node") {
-                        ansiblePlaybook  playbook: 'ansible/health-heck.yml', inventory: 'ansible/inventory/production', limit: '@ansible/deploy_to.yml'
+                        ansiblePlaybook  playbook: 'ansible/health-check.yml', inventory: 'ansible/inventory/production', limit: '@ansible/deploy_to.yml'
                     }
 
                     stage("Switch non active node to live") {
@@ -40,7 +40,7 @@ pipelineJob("$basePath/deploy-to-production") {
                     }
 
                     stage("Save artifact") {
-                        archiveArtifacts artifacts: ['ansible/builds/*.tar.gz', 'ansible/deploy_to.yml'], excludes: 'output/*.md'
+                        archiveArtifacts artifacts: 'ansible/builds/*.tar.gz, ansible/deploy_to.yml', excludes: 'output/*.md'
                     }
                 }
             """.stripIndent())
