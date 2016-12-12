@@ -1,0 +1,9 @@
+/ansible/deploy_to.yml
+!/builds
+/builds/*
+!builds/.gitkeep
+.idea/
+/node_modules/
+.DS_Store
+ansible_parameters.yml
+ansible_server_configuration.yml

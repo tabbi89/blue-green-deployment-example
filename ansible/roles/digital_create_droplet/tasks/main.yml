@@ -1,0 +1,89 @@
+---
+- name: Digital droplet | Remove droplet
+  uri:
+    url: https://api.digitalocean.com/v2/droplets?tag_name={{ digital_droplet_name }}
+    method: DELETE
+    HEADER_Content-Type: "application/json"
+    HEADER_Authorization: "Bearer {{ digital_api_token }}"
+    status_code: 204, 404, 422
+  tags:
+    - with-removal
+
+- name: Digital droplet | Create droplet
+  uri:
+    url: https://api.digitalocean.com/v2/droplets
+    method: POST
+    body:
+      name: "{{ digital_droplet_name }}"
+      region: "fra1"
+      size: "{{ size | default('512mb') }}"
+      image: "ubuntu-16-04-x64"
+      ssh_keys:
+        - "{{ digital_ssh_key_hex }}"
+      backups: false
+      ipv6: true
+      user_data: null
+      private_networking: null
+      volumes: null
+      tags:
+        - "{{ digital_droplet_tag }}"
+    body_format: json
+    HEADER_Content-Type: "application/json"
+    HEADER_Authorization: "Bearer {{ digital_api_token }}"
+    status_code: 202
+  register: droplet
+  tags:
+    - always
+
+- name: Digital droplet | Save new droplet id
+  set_fact: {"droplet_{{ digital_droplet_name }}_id":"{{ droplet['json']['droplet']['id'] }}"}
+  tags:
+    - always
+
+- debug: msg="Droplet was created with id {{ droplet['json']['droplet']['id'] }}"
+  tags:
+    - always
+
+- name: Digital droplet | Get droplet network
+  uri:
+    url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['droplet']['id'] }}
+    method: GET
+    HEADER_Content-Type: "application/json"
+    HEADER_Authorization: "Bearer {{ digital_api_token }}"
+    status_code: 200, 404
+  register: droplet_data
+  until: droplet_data.status == 200
+  retries: 12
+  delay: 5
+  tags:
+    - always
+
+- name: Digital droplet | Get droplet status
+  uri:
+    url: https://api.digitalocean.com/v2/droplets/{{ droplet['json']['droplet']['id'] }}
+    method: GET
+    HEADER_Content-Type: "application/json"
+    HEADER_Authorization: "Bearer {{ digital_api_token }}"
+    status_code: 200
+  register: droplet_data
+  until: droplet_data['json']['droplet']['status'] == "active"
+  retries: 12
+  delay: 5
+  tags:
+    - always
+
+- debug: msg="Droplet {{ digital_droplet_name }} IP {{ droplet_data['json']['droplet']['networks']['v4'][0]['ip_address'] }}"
+  tags:
+    - always
+
+- name: Digital droplet | Insert droplet ssh config to configuation block in ~/.ssh/config
+  blockinfile:
+    dest: ~/.ssh/config
+    block: |
+      Host {{ digital_droplet_name }}
+         User root
+         IdentityFile ~/.ssh/id_rsa_digital
+         Hostname {{ droplet_data['json']['droplet']['networks']['v4'][0]['ip_address'] }}
+    marker: "# {mark} {{ digital_droplet_name }}"
+  tags:
+    - add-to-ssh-config

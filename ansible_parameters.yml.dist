@@ -1,0 +1,6 @@
+---
+digital_api_token: PLACEHOLDER
+digital_ssh_key_hex: PLACEHOLDER
+ssh_key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  -----END RSA PRIVATE KEY-----

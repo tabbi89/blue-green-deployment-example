@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  connection: local
+
+  roles:
+    - digital_find_non_active_node

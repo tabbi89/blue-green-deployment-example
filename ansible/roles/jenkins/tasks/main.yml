@@ -1,0 +1,34 @@
+---
+- name: Jenkins | Clean docker jenkins tmp directory
+  file: path=/tmp/docker-jenkins state=absent
+
+- name: Jenkins | Create tmp docker jenkins directory
+  file: path=/tmp/docker-jenkins state=directory
+
+- name: Jenkins | Create ssh config
+  template: src=config.j2 dest=/tmp/docker-jenkins/config
+
+- name: Jenkins | Ensure private key to prod env exists
+  copy:
+    content: "{{ ssh_key }}"
+    dest: "/tmp/docker-jenkins/id_rsa"
+
+- name: Jenkins | Create env config
+  template: src=jenkins.env.j2 dest=/tmp/docker-jenkins/jenkins.env
+
+- name: Jenkins | Synchronize docker files
+  synchronize: src=docker-jenkins dest=/tmp
+
+- name: Jenkins | Start jenkins
+  raw: docker-compose -f /tmp/docker-jenkins/docker-compose.yml up --build -d
+
+- name: Jenkins | Check jenkins status
+  raw: docker ps
+  register: output
+
+- debug: var=output
+
+- name: Jenkins | Ensure that jenkins is up and running
+  assert:
+    that:
+      - "'dockerjenkins_master_1' in output.stdout"

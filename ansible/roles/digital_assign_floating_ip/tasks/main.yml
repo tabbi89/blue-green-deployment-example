@@ -1,0 +1,14 @@
+---
+- name: Digital | Assign new floating ip to droplet
+  uri:
+    url: https://api.digitalocean.com/v2/floating_ips
+    method: POST
+    body:
+        droplet_id: "{{ digital_droplet_id }}"
+    body_format: json
+    HEADER_Content-Type: "application/json"
+    HEADER_Authorization: "Bearer {{ digital_api_token }}"
+    status_code: 202
+  register: floating_ip
+
+- debug: msg="Floating ip {{ floating_ip['json']['floating_ip']['ip'] }}"

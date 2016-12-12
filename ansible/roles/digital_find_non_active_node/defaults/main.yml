@@ -1,0 +1,4 @@
+---
+env_to_deploy: production01
+digital_floating_ip: "PLACEHOLDER"
+digital_api_token: "PLACEHOLDER"

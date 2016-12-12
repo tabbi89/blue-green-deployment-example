@@ -1,0 +1,9 @@
+---
+
+- name: restart nginx
+  changed_when: True
+  service: name={{ nginx_service_name }} state=restarted
+
+- name: reload nginx
+  changed_when: True
+  service: name={{ nginx_service_name }} state=reloaded

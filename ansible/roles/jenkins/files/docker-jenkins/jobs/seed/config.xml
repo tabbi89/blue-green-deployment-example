@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+    <actions/>
+    <description>Seed jobs for jenkins</description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.24.0">
+            <projectUrl>https://github.com/tabbi89/blue-green-deployment-example/</projectUrl>
+            <displayName>Seed jobs</displayName>
+        </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    </properties>
+    <scm class="hudson.plugins.git.GitSCM" plugin="git@3.0.1">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+            <hudson.plugins.git.UserRemoteConfig>
+                <url>https://github.com/tabbi89/blue-green-deployment-example</url>
+            </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+            <hudson.plugins.git.BranchSpec>
+                <name>*/master</name>
+            </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions/>
+    </scm>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.53">
+            <targets>jenkins-jobs/**/*Jobs.groovy</targets>
+            <usingScriptText>false</usingScriptText>
+            <ignoreExisting>false</ignoreExisting>
+            <ignoreMissingFiles>false</ignoreMissingFiles>
+            <failOnMissingPlugin>false</failOnMissingPlugin>
+            <unstableOnDeprecation>false</unstableOnDeprecation>
+            <removedJobAction>IGNORE</removedJobAction>
+            <removedViewAction>IGNORE</removedViewAction>
+            <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+        </javaposse.jobdsl.plugin.ExecuteDslScripts>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>

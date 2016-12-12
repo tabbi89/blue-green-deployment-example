@@ -1,0 +1,10 @@
+Host *
+    StrictHostKeyChecking no
+Host production01
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    Hostname {{ jenkins_production_01_ip }}
+Host production02
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    Hostname {{ jenkins_production_02_ip }}

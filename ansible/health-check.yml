@@ -1,0 +1,15 @@
+---
+- hosts: webservers
+
+  tasks:
+    - name: Health check | Check if host responses
+      uri:
+        url: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+        method: GET
+        status_code: 200
+      register: response
+      until: response.status == 200
+      retries: 12
+      delay: 5
+      delegate_to: 127.0.0.1
+      ignore_errors: true

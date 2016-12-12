@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+
+  roles:
+    - { role: digital_create_droplet, digital_droplet_name: "jenkins", digital_droplet_tag: "jenkins-master", size: '1gb' }
+    - { role: digital_create_droplet, digital_droplet_name: "production01", digital_droplet_tag: "production01" }
+    - { role: digital_create_droplet, digital_droplet_name: "production02", digital_droplet_tag: "production02" }
+    - { role: digital_assign_floating_ip, digital_droplet_id: "{{ droplet_production01_id }}", tags: ["with-new-floating-ip"] }

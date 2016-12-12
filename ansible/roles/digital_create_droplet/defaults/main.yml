@@ -1,0 +1,5 @@
+---
+digital_droplet_name: "droplet"
+digital_ssh_key_hex: "PLACEHOLDER"
+digital_droplet_tag: "droplet_tag"
+digital_api_token: "PLACEHOLDER"

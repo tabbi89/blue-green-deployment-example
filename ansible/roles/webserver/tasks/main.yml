@@ -1,0 +1,18 @@
+---
+- name: WebServer | update apt
+  apt: update_cache=yes
+
+- name: WebServer | Install packages
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ packages }}"
+
+- name: WebServer | Create www directory
+  file: path=/jenkins/live state=directory owner=www-data group=www-data
+
+- name: WebServer | Create the configurations for sites
+  template:
+    src: nginx_default_site_conf.j2
+    dest: "{{nginx_conf_dir}}/sites-available/default"
+  notify:
+   - reload nginx

@@ -1,0 +1,6 @@
+---
+- name: Python | Prerequisites for python
+  raw: apt-get update && apt-get -y install build-essential checkinstall
+
+- name: Pyton | Install python2
+  raw: apt-get -y install python-minimal

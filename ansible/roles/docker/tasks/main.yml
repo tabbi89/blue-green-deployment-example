@@ -1,0 +1,30 @@
+---
+- name: Docker | Install recommended packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - linux-image-extra-{{ ansible_kernel }}
+    - linux-image-extra-virtual
+
+- name: Docker | Install ppa key
+  apt_key: keyserver=keyserver.ubuntu.com id=2C52609D
+
+- name: Docker | Install ppa
+  apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_lsb.codename }} main' state=present
+
+- name: Update apt
+  apt:
+    update_cache: yes
+
+- name: Docker | Install package
+  apt: name=docker-engine state={{ docker_apt_state }}
+
+- name: Docker | Installing docker compose
+  shell: curl -L https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+
+- name: Docker | Set docker-compose permissions
+  file:
+    path="/usr/local/bin/docker-compose"
+    state=file
+    mode=0755
+    owner=root
+    group=docker

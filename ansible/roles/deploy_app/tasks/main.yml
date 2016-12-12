@@ -1,0 +1,17 @@
+---
+- name: Deploy app | Create artifact
+  local_action: command chdir={{ playbook_dir }}/../ tar -zcvf builds/{{ deploy_app_name }} public/
+
+- name: Deploy app | Remove the folder on node
+  file: path=/jenkins/live state=absent
+
+- name: Deploy app | Create the folder on node
+  file: path=/jenkins/live state=directory
+
+- name: Deploy app | Copy and unarchive current build artifact
+  unarchive: src={{ playbook_dir }}/../builds/{{ deploy_app_name }} dest=/jenkins/live owner=www-data group=www-data
+
+- name: Deploy app | Restart nginx
+  raw: service nginx restart
+
+- debug: msg="Deployed to {{ ansible_default_ipv4.address }}"
